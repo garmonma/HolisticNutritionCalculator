@@ -1,0 +1,622 @@
+<!-- Page Content -->
+<div class="container" ng-controller="CalcCtrl">
+
+    <!-- Main View -->
+    <div class="col-lg-12">
+        <h1 class="page-header">Calculate Foods</h1>
+
+        <div class="col-lg-12" id="calculatorSearchDiv">
+            <div class="col-lg-6 input-group">
+                <input class="form-control" ng-model="searchString" type="search" results="0" placeholder="Enter Item"
+                       value="{{searchString}}" aria-describedby="search-addon2"/>
+                <span class="input-group-addon btn" id="search-addon2" ng-click="search()" data-toggle="modal"
+                      data-target="#searchModal">Search</span>
+            </div>
+            <div class="col-lg-6">
+        </div>
+        </div>
+
+        <!-- Food List -->
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Selected Items
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>-</th>
+                            <th>Item</th>
+                            <th>Serving Size</th>
+                            <th>Servings</th>
+                            <th>N. Label</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr ng-repeat="foodItem in foodItemList">
+                            <td>
+                                <button ng-click="subItem($index)" class="btn-link">-</button>
+                            </td>
+
+                            <td>{{ foodItem.name}}</td>
+
+                            <td>
+                                <select class="input-sm"
+                                        ng-options="s as s.servingDescription for s in foodItem.servingSizeList"
+                                        ng-model="foodItem.servingSize"
+                                        ng-change="updateServingSize($index, foodItem.servingSize)">
+                                </select>
+
+                            </td>
+
+                            <td>
+                                <input class="input-sm" ng-model="foodItem.servings"
+                                       ng-change="updateServings($index, foodItem.servings)" type="number"
+                                       placeholder="0"/>
+                            </td>
+
+                            <td>
+                                <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"
+                                      ng-click="showFoodItemNutritionLabel(foodItem)" data-toggle="modal"
+                                      data-target="#nutritionLabelModal">
+                                </span>
+                            </td>
+
+
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nutrition Label -->
+        <div class="col-lg-4 performance-facts">
+            <header class="performance-facts__header">
+                <h1 class="performance-facts__title">Nutrition Facts</h1>
+                <!--<p>Serving Size 1/2 cup (about 82g)-->
+                <!--<p>Serving Per Container 8</p>-->
+            </header>
+            <table class="performance-facts__table">
+                <thead>
+                <tr>
+                    <!--<th colspan="3" class="small-info">-->
+                    <!--Amount Per Serving-->
+                    <!--</th>-->
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th colspan="2">
+                        <b>Calories</b>
+                        {{nutritionLabel.calories.toFixed(2)}}
+                    </th>
+                    <td>
+                        Calories from Fat
+                        {{(nutritionLabel.fat * 9).toFixed(2)}}
+                    </td>
+                </tr>
+                <tr class="thick-row">
+                    <td colspan="3" class="small-info">
+                        <b>% Daily Value*</b>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        <b>Total Fat</b>
+                        {{nutritionLabel.fat.toFixed(2)}}g
+                    </th>
+                    <td>
+                        <b>{{((nutritionLabel.fat / 65) * 100).toFixed(2)}}%</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="blank-cell">
+                    </td>
+                    <th>
+                        Saturated Fat
+                        {{nutritionLabel.saturatedFat.toFixed(2)}}g
+                    </th>
+                    <td>
+                        <b>{{((nutritionLabel.saturatedFat / 20) * 100).toFixed(2)}}%</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="blank-cell">
+                    </td>
+                    <th>
+                        Trans Fat
+                        {{nutritionLabel.transFat.toFixed(2)}}g
+                    </th>
+                    <td>
+                        <b>{{((nutritionLabel.transFat / 20) * 100).toFixed(2)}}%</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="blank-cell">
+                    </td>
+                    <th>
+                        Polyunsaturated Fat
+                        {{nutritionLabel.polyunsaturatedFat.toFixed(2)}}g
+                    </th>
+                    <td>
+                        <!--<b>{{nutritionLabel.polyunsaturatedFat.toFixed(2)}}%</b>-->
+                    </td>
+                </tr>
+                <tr>
+                    <td class="blank-cell">
+                    </td>
+                    <th>
+                        Monounsaturated Fat
+                        {{nutritionLabel.monounsaturatedFat.toFixed(2)}}g
+                    </th>
+                    <td>
+                        <!--<b>{{nutritionLabel.monounsaturatedFat.toFixed(2)}}%</b>-->
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        <b>Cholesterol</b>
+                        {{nutritionLabel.cholesterol.toFixed(2)}}mg
+                    </th>
+                    <td>
+                        <b>{{((nutritionLabel.cholesterol / 300) * 100).toFixed(2)}}%</b>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        <b>Sodium</b>
+                        {{nutritionLabel.sodium.toFixed(2)}}mg
+                    </th>
+                    <td>
+                        <b>{{((nutritionLabel.sodium / 2400) * 100).toFixed(2)}}%</b>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        <b>Potassium</b>
+                        {{nutritionLabel.potassium.toFixed(2)}}mg
+                    </th>
+                    <td>
+                        <b>{{((nutritionLabel.potassium / 4700) * 100).toFixed(2)}}%</b>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        <b>Carbohydrates</b>
+                        {{nutritionLabel.carbohydrate.toFixed(2)}}g
+                    </th>
+                    <td>
+                        <b>{{((nutritionLabel.carbohydrate / 300) * 100).toFixed(2)}}%</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="blank-cell">
+                    </td>
+                    <th>
+                        Dietary Fiber
+                        {{nutritionLabel.fiber.toFixed(2)}}g
+                    </th>
+                    <td>
+                        <b>{{((nutritionLabel.fiber / 25) * 100).toFixed(2)}}%</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="blank-cell">
+                    </td>
+                    <th>
+                        Sugars
+                        {{nutritionLabel.sugar.toFixed(2)}}g
+                    </th>
+                    <td>
+                        <!--{{nutritionLabel.sugar.toFixed(2)}}%-->
+                    </td>
+                </tr>
+                <tr class="thick-end">
+                    <th colspan="2">
+                        <b>Protein</b>
+                        {{nutritionLabel.protein.toFixed(2)}}g
+                    </th>
+                    <td>
+                        <!--{{nutritionLabel.protein.toFixed(2)}}%-->
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <table class="performance-facts__table--grid">
+                <tbody>
+                <tr>
+                    <td colspan="2">
+                        Vitamin A
+                        {{nutritionLabel.vitaminA.toFixed(2)}}%
+                    </td>
+                    <td>
+                        Vitamin C
+                        {{nutritionLabel.vitaminC.toFixed(2)}}%
+                    </td>
+                </tr>
+                <tr class="thin-end">
+                    <td colspan="2">
+                        Calcium
+                        {{nutritionLabel.calcium.toFixed(2)}}%
+                    </td>
+                    <td>
+                        Iron
+                        {{nutritionLabel.iron.toFixed(2)}}%
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <p class="small-info">* Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be
+                higher or lower depending on your calorie needs:</p>
+
+            <table class="performance-facts__table--small small-info">
+                <thead>
+                <tr>
+                    <td colspan="2"></td>
+                    <th>Calories:</th>
+                    <th>2,000</th>
+                    <th>2,500</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th colspan="2">Total Fat</th>
+                    <td>Less than</td>
+                    <td>65g</td>
+                    <td>80g</td>
+                </tr>
+                <tr>
+                    <td class="blank-cell"></td>
+                    <th>Saturated Fat</th>
+                    <td>Less than</td>
+                    <td>20g</td>
+                    <td>25g</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Cholesterol</th>
+                    <td>Less than</td>
+                    <td>300mg</td>
+                    <td>300 mg</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Sodium</th>
+                    <td>Less than</td>
+                    <td>2,400mg</td>
+                    <td>2,400mg</td>
+                </tr>
+                <tr>
+                    <th colspan="3">Total Carbohydrate</th>
+                    <td>300g</td>
+                    <td>375g</td>
+                </tr>
+                <tr>
+                    <td class="blank-cell"></td>
+                    <th colspan="2">Dietary Fiber</th>
+                    <td>25g</td>
+                    <td>30g</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <p class="small-info">
+                Calories per gram:
+            </p>
+            <p class="small-info text-center">
+                Fat 9
+                &bull;
+                Carbohydrate 4
+                &bull;
+                Protein 4
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Search Modal -->
+    <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Select Some Items</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-12">
+                        <ul class="list-group">
+                            <li class="list-group-item" ng-repeat="item in searchedList">
+                                <ul class="list-inline">
+                                    <li class="list-group-item">
+                                        <input type="checkbox" ng-click="appendSelectedItems(item.id)">
+                                    </li>
+                                    <li class="list-group-item">
+                                        {{item.name}}
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" ng-click="addItems()" data-dismiss="modal">Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Single Item Nutrition Label Modal -->
+    <div class="modal fade" id="nutritionLabelModal" tabindex="-1" role="dialog" aria-labelledby="nutritionLabelModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myNutritionLabelModalLabel">
+                        {{foodItemNutritionLabel.description }} of {{foodItemNutritionLabel.foodItemName}}</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- Nutrition Label -->
+                    <div class="col-lg-4 performance-facts">
+                        <header class="performance-facts__header">
+                            <h1 class="performance-facts__title">Nutrition Facts</h1>
+                            <!--<p>Serving Size 1/2 cup (about 82g)-->
+                            <!--<p>Serving Per Container 8</p>-->
+                        </header>
+                        <table class="performance-facts__table">
+                            <thead>
+                            <tr>
+                                <!--<th colspan="3" class="small-info">-->
+                                <!--Amount Per Serving-->
+                                <!--</th>-->
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th colspan="2">
+                                    <b>Calories</b>
+                                    {{foodItemNutritionLabel.calories.toFixed(2)}}
+                                </th>
+                                <td>
+                                    Calories from Fat
+                                    {{(foodItemNutritionLabel.fat * 9).toFixed(2)}}
+                                </td>
+                            </tr>
+                            <tr class="thick-row">
+                                <td colspan="3" class="small-info">
+                                    <b>% Daily Value*</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">
+                                    <b>Total Fat</b>
+                                    {{foodItemNutritionLabel.fat.toFixed(2)}}g
+                                </th>
+                                <td>
+                                    <b>{{((foodItemNutritionLabel.fat / 65) * 100).toFixed(2)}}%</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="blank-cell">
+                                </td>
+                                <th>
+                                    Saturated Fat
+                                    {{foodItemNutritionLabel.saturatedFat.toFixed(2)}}g
+                                </th>
+                                <td>
+                                    <b>{{((foodItemNutritionLabel.saturatedFat / 20) * 100).toFixed(2)}}%</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="blank-cell">
+                                </td>
+                                <th>
+                                    Trans Fat
+                                    {{foodItemNutritionLabel.transFat.toFixed(2)}}g
+                                </th>
+                                <td>
+                                    <b>{{((foodItemNutritionLabel.transFat / 20) * 100).toFixed(2)}}%</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="blank-cell">
+                                </td>
+                                <th>
+                                    Polyunsaturated Fat
+                                    {{foodItemNutritionLabel.polyunsaturatedFat.toFixed(2)}}g
+                                </th>
+                                <td>
+                                    <!--<b>{{foodItemNutritionLabel.polyunsaturatedFat.toFixed(2)}}%</b>-->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="blank-cell">
+                                </td>
+                                <th>
+                                    Monounsaturated Fat
+                                    {{foodItemNutritionLabel.monounsaturatedFat.toFixed(2)}}g
+                                </th>
+                                <td>
+                                    <!--<b>{{foodItemNutritionLabel.monounsaturatedFat.toFixed(2)}}%</b>-->
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">
+                                    <b>Cholesterol</b>
+                                    {{foodItemNutritionLabel.cholesterol.toFixed(2)}}mg
+                                </th>
+                                <td>
+                                    <b>{{((foodItemNutritionLabel.cholesterol / 300) * 100).toFixed(2)}}%</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">
+                                    <b>Sodium</b>
+                                    {{foodItemNutritionLabel.sodium.toFixed(2)}}mg
+                                </th>
+                                <td>
+                                    <b>{{((foodItemNutritionLabel.sodium / 2400) * 100).toFixed(2)}}%</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">
+                                    <b>Potassium</b>
+                                    {{foodItemNutritionLabel.potassium.toFixed(2)}}mg
+                                </th>
+                                <td>
+                                    <b>{{((foodItemNutritionLabel.potassium / 4700) * 100).toFixed(2)}}%</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">
+                                    <b>Carbohydrates</b>
+                                    {{foodItemNutritionLabel.carbohydrate.toFixed(2)}}g
+                                </th>
+                                <td>
+                                    <b>{{((foodItemNutritionLabel.carbohydrate / 300) * 100).toFixed(2)}}%</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="blank-cell">
+                                </td>
+                                <th>
+                                    Dietary Fiber
+                                    {{foodItemNutritionLabel.fiber.toFixed(2)}}g
+                                </th>
+                                <td>
+                                    <b>{{((foodItemNutritionLabel.fiber / 25) * 100).toFixed(2)}}%</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="blank-cell">
+                                </td>
+                                <th>
+                                    Sugars
+                                    {{foodItemNutritionLabel.sugar.toFixed(2)}}g
+                                </th>
+                                <td>
+                                    <!--{{foodItemNutritionLabel.sugar.toFixed(2)}}%-->
+                                </td>
+                            </tr>
+                            <tr class="thick-end">
+                                <th colspan="2">
+                                    <b>Protein</b>
+                                    {{foodItemNutritionLabel.protein.toFixed(2)}}g
+                                </th>
+                                <td>
+                                    <!--{{foodItemNutritionLabel.protein.toFixed(2)}}%-->
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="performance-facts__table--grid">
+                            <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    Vitamin A
+                                    {{foodItemNutritionLabel.vitaminA.toFixed(2)}}%
+                                </td>
+                                <td>
+                                    Vitamin C
+                                    {{foodItemNutritionLabel.vitaminC.toFixed(2)}}%
+                                </td>
+                            </tr>
+                            <tr class="thin-end">
+                                <td colspan="2">
+                                    Calcium
+                                    {{foodItemNutritionLabel.calcium.toFixed(2)}}%
+                                </td>
+                                <td>
+                                    Iron
+                                    {{foodItemNutritionLabel.iron.toFixed(2)}}%
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <p class="small-info">* Percent Daily Values are based on a 2,000 calorie diet. Your daily
+                            values may be
+                            higher or lower depending on your calorie needs:</p>
+
+                        <table class="performance-facts__table--small small-info">
+                            <thead>
+                            <tr>
+                                <td colspan="2"></td>
+                                <th>Calories:</th>
+                                <th>2,000</th>
+                                <th>2,500</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th colspan="2">Total Fat</th>
+                                <td>Less than</td>
+                                <td>65g</td>
+                                <td>80g</td>
+                            </tr>
+                            <tr>
+                                <td class="blank-cell"></td>
+                                <th>Saturated Fat</th>
+                                <td>Less than</td>
+                                <td>20g</td>
+                                <td>25g</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Cholesterol</th>
+                                <td>Less than</td>
+                                <td>300mg</td>
+                                <td>300 mg</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Sodium</th>
+                                <td>Less than</td>
+                                <td>2,400mg</td>
+                                <td>2,400mg</td>
+                            </tr>
+                            <tr>
+                                <th colspan="3">Total Carbohydrate</th>
+                                <td>300g</td>
+                                <td>375g</td>
+                            </tr>
+                            <tr>
+                                <td class="blank-cell"></td>
+                                <th colspan="2">Dietary Fiber</th>
+                                <td>25g</td>
+                                <td>30g</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <p class="small-info">
+                            Calories per gram:
+                        </p>
+                        <p class="small-info text-center">
+                            Fat 9
+                            &bull;
+                            Carbohydrate 4
+                            &bull;
+                            Protein 4
+                        </p>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
